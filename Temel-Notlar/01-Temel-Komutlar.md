@@ -1,3 +1,15 @@
+# USE Komutu (Veritabanı Seçimi)
+
+`USE` komutu, veritabanı sunucusu üzerinde bulunan birden fazla veritabanı arasından **hangisinde işlem yapacağını (aktif veritabanını)** belirlemek için kullanılır.
+
+### Sözdizimi
+
+```sql
+USE veritabani_adi;
+```
+
+---
+
 # DDL Komutları (CREATE, ALTER, DROP)
 
 **DDL** (*Data Definition Language* - Veri Tanımlama Dili), veritabanının yapısını, tablolarını ve diğer veritabanı nesnelerini (index, view, schema vb.) oluşturmak, değiştirmek veya silmek için kullanılan SQL komutları kümesidir.
