@@ -129,3 +129,161 @@ DROP INDEX idx_musteri_ad ON musteriler;
 -- MySQL
 DROP INDEX idx_musteri_ad ON musteriler;
 ```
+
+---
+
+## 4. TRUNCATE Komutu
+
+Bir tablonun yapısını, sütunlarını ve kısıtlamalarını koruyarak **içindeki tüm verileri tek hamlede ve kalıcı olarak silmek** için kullanılan DDL komutudur.
+
+### Sözdizimi
+```sql
+TRUNCATE TABLE musteriler;
+```
+
+### TRUNCATE Komutunun Önemli Özellikleri
+
+* **Yapıyı Korur:** Tablonun kendisi (`CREATE TABLE` ile tanımlanan sütunlar, veri tipleri vb.) kalır, sadece içindeki tüm satırlar temizlenir.
+* **Sayaçları Sıfırlar:** Tabloda otomatik artan bir kimlik sütunu (`AUTO_INCREMENT` / `IDENTITY`) varsa, sayacı varsayılan ilk değerine (ör. 1) sıfırlar.
+* **Hızlıdır:** `DELETE` komutu gibi verileri satır satır silmek yerine tablonun veri sayfalarını doğrudan boşalttığı için çok daha hızlı çalışır.
+* **Koşul Almaz:** `WHERE` yan cümleciği kullanılamaz; yani sadece belirli satırları silmek için kullanılamaz, her zaman tablonun tamamını temizler.
+
+---
+
+## 💡 TRUNCATE vs. DROP Karşılaştırması
+
+| Özellik | TRUNCATE | DROP |
+| :--- | :--- | :--- |
+| **Kategori** | DDL | DDL |
+| **Sildiği Yapı** | Tüm Satırlar | Tablo + Veriler (Her Şey) |
+| **Tablo Yapısı Kalır mı?** | Evet | Hayır (Tablo tamamen silinir) |
+| **`WHERE` Kullanılabilir mi?** | Hayır | Hayır |
+| **Çalışma Hızı** | Çok Hızlı | Çok Hızlı |
+| **ID Sayacını Sıfırlar mı?** | Evet | N/A (Tablo yok olur) |
+
+---
+
+# DQL (Data Query Language - Veri Sorgulama Dili)
+
+**DQL**, veritabanındaki tabloların yapısını veya içeriğini değiştirmeden, mevcut verileri **sorgulamak**, **filtrelemek**, **gruplamak** ve **raporlamak** için kullanılan SQL komut grubudur.
+
+## DQL Yapı Taşları ve Yan Cümlecikleri
+
+DQL'in ana komutu **`SELECT`**'tir. Bu komut, aşağıdaki yan cümlecikler (*clauses*) ve yapılarla birlikte kullanılarak karmaşık sorgular oluşturulur:
+
+> **NOT :**
+> Burada açıklamalar üzerinden anlamanız zor olacaktır. Lütfen örnekle beraber aynı anda inceleyiniz.
+
+* **`SELECT`:** Listelenmek istenen sütunları belirler.
+* **`FROM`:** Verinin çekileceği tablo veya tabloları belirtir.
+* **`AS` (Alias):** Sütunlara veya tablolara geçici takma isimler vererek çıktı okunabilirliğini artırır.
+* **`DISTINCT`:** Sorgu sonucundaki tekrar eden (yinelenen) kayıtları temizleyerek sadece benzersiz verileri getirir.
+* **`WHERE`:** Belirli şartlara/koşullara göre satırları filtreler.
+* **`GROUP BY`:** Verileri belirli sütunlara göre gruplar (Aggregate fonksiyonlarla kullanılır) (Başka bölümde detaylı anlatılacak).
+* **`HAVING`:** Gruplanmış veriler üzerinde filtreleme yapar.
+* **`ORDER BY`:** Sorgu sonucunu artan (`ASC`) veya azalan (`DESC`) sırada sıralar.
+* **`LIMIT` / `TOP` / `FETCH`:** Dönen sonuç kümesinden kaç satır getirileceğini kısıtlar. 
+* **`JOIN` Yapıları:** Birden fazla tabloyu birleştirerek tek bir sorguda veri çekmeyi sağlar (`INNER JOIN`, `LEFT JOIN`, `RIGHT JOIN`, `FULL JOIN`) (Başka bölümde anlatılacak).
+
+## `LIMIT` / `TOP` / `FETCH` farkı
+| Komut | Destekleyen Veritabanları | Örnek Sözdizimi |
+| :--- | :--- | :--- |
+| **`LIMIT`** | PostgreSQL, MySQL, SQLite | `SELECT * FROM musteriler LIMIT 10;` |
+| **`TOP`** | MS SQL Server (T-SQL) | `SELECT TOP 10 * FROM musteriler;` |
+| **`FETCH`** | Oracle, PostgreSQL, MS SQL Server (ANSI SQL Standardı) | `SELECT * FROM musteriler FETCH FIRST 10 ROWS ONLY;` |
+
+---
+
+## SELECT
+
+**SELECT** komutu; veritabanından veri okumak ve istenen formatta listelemek için kullanılan temel sorgulama komutudur.
+
+### 🔍 SELECT Kullanım Senaryoları ve Örnekler
+
+### Tablodaki Tüm Sütunları Çekme (`*`)
+```sql
+SELECT * 
+FROM musteriler;
+```
+
+### Belirli Sütunları Seçme
+```sql
+SELECT ad, soyad, eposta 
+FROM musteriler;
+```
+
+### Sütunlara Takma Ad Verme
+```sql
+SELECT 
+    ad AS musteri_adi, 
+    eposta AS iletisim_adresi 
+FROM musteriler;
+```
+
+### Tekrarlayan Verileri Tekilleştirme
+```sql
+SELECT DISTINCT sehir 
+FROM musteriler;
+```
+
+### Hesaplama ve Metinsel İşlemler
+```sql
+SELECT 
+    urun_adi, 
+    fiyat, 
+    (fiyat * 1.20) AS kdvli_fiyat 
+FROM urunler;
+```
+
+### Koşula Göre Satırları Filtreleme
+```sql
+SELECT * 
+FROM musteriler 
+WHERE sehir = 'İstanbul';
+```
+
+### Verileri Belirli Sütunlara Göre Gruplama
+```sql
+SELECT sehir 
+FROM musteriler 
+GROUP BY sehir;
+```
+
+### Gruplanmış Veriler Üzerinde Filtreleme Yapma
+```sql
+SELECT sehir 
+FROM musteriler 
+GROUP BY sehir 
+HAVING sehir = 'İstanbul';
+/*
+where ile having farkı :
+where = gruplamadan önce filtreleme
+having = gruplamadan sonra filtreleme
+*/
+```
+
+### Sorgu Sonucunu Sıralama
+```sql
+SELECT ad, soyad, kayit_tarihi 
+FROM musteriler 
+ORDER BY kayit_tarihi DESC;
+
+SELECT ad, soyad, kayit_tarihi 
+FROM musteriler 
+ORDER BY kayit_tarihi ASC;
+```
+
+### Getirilecek Satır Sayısını Kısıtlama
+```sql
+SELECT * 
+FROM musteriler 
+LIMIT 10;
+
+SELECT TOP 5 ad, soyad 
+FROM musteriler;
+
+SELECT * 
+FROM musteriler 
+FETCH FIRST 5 ROWS ONLY;
+```
+
