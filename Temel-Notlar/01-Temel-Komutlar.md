@@ -76,6 +76,52 @@ USE veritabani_adi;
 
 ---
 
+# SQL Yorum Satırları (Comments)
+
+SQL'de yorum satırları, kodun çalışmasını etkilemeyen; veritabanı geliştiricisine açıklama ekleme, geçici olarak bir kod bloğunu devre dışı bırakma veya dokümantasyon oluşturma imkanı tanıyan yapılardır.
+
+SQL motoru, yorum satırı olarak işaretlenmiş alanları sorguyu derlerken ve çalıştırırken **tamamen yok sayar**.
+
+---
+
+## Yorum Satırı Türleri
+
+SQL dilinde temel olarak iki farklı yorum satırı kullanımı bulunur:
+
+### 1. Tek Satırlı Yorum Satırı (`--`)
+
+Tek bir satırı veya satırın belirli bir bölümünü yorum hâline getirmek için kullanılır. İki adet ardışık tire/eksi işaretinden (`--`) sonra gelen tüm metin satır sonuna kadar yorum olarak kabul edilir.
+
+```sql
+-- Bu bir tek satırlı açıklamadır. Veritabanı tarafından çalıştırılmaz.
+USE ETRADE;
+
+SELECT 
+    ID, 
+    CUSTOMERNAME -- Müşterinin adını ve soyadını getirir
+FROM CUSTOMERS;
+```
+
+### 2. Çok Satırlı Yorum Satırı (`/* ... */`)
+
+Birden fazla satıra yayılan uzun açıklamalar yazmak veya kod bloğunun tamamını geçici olarak devre dışı bırakmak için kullanılır. `/*` ile başlar ve `*/` ile biter.
+
+```sql
+/*
+  Aşağıdaki sorgu e-ticaret veritabanındaki 
+  müşteri listesini çeker. 
+  Geliştirici: Ahmet
+  Tarih: 2026-09-17
+*/
+SELECT 
+    ID, 
+    CUSTOMERNAME, 
+    GENDER AS CINSIYET 
+FROM CUSTOMERS;
+```
+
+---
+
 # DDL Komutları (Data Definition Language - Veri Tanımlama Dili) (CREATE, ALTER, DROP)
 
 **DDL** (*Data Definition Language* - Veri Tanımlama Dili), veritabanının yapısını, tablolarını ve diğer veritabanı nesnelerini (index, view, schema vb.) oluşturmak, değiştirmek veya silmek için kullanılan SQL komutları kümesidir.
@@ -302,6 +348,14 @@ FROM musteriler;
 ```sql
 SELECT DISTINCT sehir 
 FROM musteriler;
+
+-- Yanlış Kullanım
+USE ETRADE;
+
+SELECT ID, CUSTOMERNAME, 
+	DISTINCT CITY      -- DISTINCT, SELECT'in önüne gelmelidir.
+
+FROM CUSTOMERS;
 ```
 
 ### Hesaplama ve Metinsel İşlemler
