@@ -349,9 +349,12 @@ FROM musteriler;
 SELECT DISTINCT sehir 
 FROM musteriler;
 
--- Yanlış Kullanım
-USE ETRADE;
+-- Çoklu Kullanım
+SELECT DISTINCT GENDER, CITY --Burada birden fazla gender tekrar edebilir çünkü şehire de  bakar.
 
+FROM CUSTOMERS;
+
+-- Yanlış Kullanım
 SELECT ID, CUSTOMERNAME, 
 	DISTINCT CITY      -- DISTINCT, SELECT'in önüne gelmelidir.
 
