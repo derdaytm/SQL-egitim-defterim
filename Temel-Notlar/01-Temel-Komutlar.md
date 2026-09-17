@@ -1,3 +1,69 @@
+# SQL İsimlendirme Standartları ve Köşeli Parantez `[]` Kullanımı
+
+Veritabanı nesnelerini (tablo, sütun, vb.) tanımlarken belirli standartlara uymak ve özel durumlarda sınırlandırıcı (delimiter) kullanmak, hatasız ve sürdürülebilir kod yazımı için kritiktir.
+
+---
+
+## 1. Veri ve Nesne İsimlendirme Kuralları (Naming Conventions)
+
+SQL sorgularında ve veritabanı tasarımlarında karışıklığı ve veritabanı harf seti (collation) hatalarını önlemek için şu kurallara uyulmalıdır:
+
+* **İngilizce Karakter Kullanımı:** Türkçe karakterler (`ı, ş, ğ, ü, ö, ç` veya `I, Ğ, Ü, Ö, Ç`) veritabanı sürücülerinde karakter kodlama hatalarına yol açabileceğinden kullanılmamalıdır.
+  * *Hatalı:* `müşteri_adı`
+  * *Doğru:* `musteri_adi`
+* **Boşluk Bırakmama:** Kelimeler arasında boşlık bırakılmamalıdır. Boşluk yerine yaygın iki standarttan biri tercih edilmelidir:
+  * **Snake Case:** `musteri_id`, `kayit_tarihi`
+  * **Pascal / Camel Case:** `MusteriID`, `KayitTarihi`
+* **Sayı ve Özel Karakter Sınırı:** İsimler sayı ile başlamamalıdır ve alt çizgi (`_`) haricinde özel karakterler (`!`, `@`, `#`, `$`, `%`, `-`) içermemelidir.
+  * *Hatalı:* `1.musteri`, `musteri-adi`
+  * *Doğru:* `musteri1`, `musteri_adi`
+* **Ayrılmış Kelimeleri (Reserved Words) Kullanmama:** `SELECT`, `WHERE`, `TABLE`, `ORDER`, `GROUP` gibi SQL komut isimleri tablo veya sütun adı olarak seçilmemelidir.
+
+---
+
+## 2. Köşeli Parantez `[]` (Delimiter) Kullanımı
+
+**MS SQL Server (T-SQL)** ortamında köşeli parantez `[]`, veritabanı motoruna ilgili ifadenin birleşik ve tek bir nesne ismi olduğunu bildirmek için kullanılır. 
+
+*(Not: MySQL ortamında aynı işlem için ters tırnak `` ` ``, PostgreSQL ve Oracle ortamında ise çift tırnak `""` tercih edilir).*
+
+### Kullanım Senaryoları :
+
+#### A. İsimde Boşluk Bulunması
+Tasarımsal bir hata sonucu sütun veya tablo isminde boşluk bırakılmışsa, sorgunun hata vermemesi için `[]` kullanımı zorunludur.
+
+```sql
+-- Hatalı (SQL Server 'Adı' kısmını farklı bir komut/takma ad sanır ve syntax hatası verir):
+SELECT Müşteri Adı FROM musteriler;
+
+-- Doğru Kullanım:
+SELECT [Müşteri Adı] FROM musteriler;
+```
+
+#### B. SQL Komut İsimlerinin (Reserved Words) Nesne Adı Yapılması
+Sütun veya tablo ismi olarak SQL'in kendi komut kelimelerinden biri verildiğinde çakışmayı önlemek için kullanılır.
+
+```sql
+-- Hatalı (Order kelimesi ORDER BY komutu ile çakışır):
+SELECT Order FROM siparisler;
+
+-- Doğru Kullanım:
+SELECT [Order] FROM siparisler;
+```
+
+#### C. İsimde Özel/Türkçe Karakter Bulunması
+Veritabanı harf seti uyuşmazlıklarında ayrıştırma sorunlarının önüne geçmek için tercih edilebilir.
+
+```sql
+SELECT [İletişim Numarası] FROM [Müşteri Detay];
+```
+
+> **NOT :**
+> Doğru tasarlanmış bir veritabanında köşeli parantez `[]` kullanma ihtiyacı doğmamalıdır. Tablo ve sütun isimleri İngilizce, küçük harflerle ve boşluksuz (`customer_id`, `first_name`) oluşturulduğunda temiz ve ek sembol gerektirmeyen SQL kodları yazılır.
+
+
+---
+
 # USE Komutu (Veritabanı Seçimi)
 
 `USE` komutu, veritabanı sunucusu üzerinde bulunan birden fazla veritabanı arasından **hangisinde işlem yapacağını (aktif veritabanını)** belirlemek için kullanılır.
