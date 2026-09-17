@@ -76,7 +76,7 @@ USE veritabani_adi;
 
 ---
 
-# DDL Komutları (CREATE, ALTER, DROP)
+# DDL Komutları (Data Definition Language - Veri Tanımlama Dili) (CREATE, ALTER, DROP)
 
 **DDL** (*Data Definition Language* - Veri Tanımlama Dili), veritabanının yapısını, tablolarını ve diğer veritabanı nesnelerini (index, view, schema vb.) oluşturmak, değiştirmek veya silmek için kullanılan SQL komutları kümesidir.
 
